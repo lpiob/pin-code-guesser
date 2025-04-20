@@ -114,7 +114,7 @@ def suggest_next(df, tried_codes):
     top = features.sort_values("prob", ascending=False).head(4)
     return top[["code", "prob"]]
 
-def show_feature_importance(model, feature_names, top_n=50):
+def show_feature_importance(model, feature_names, top_n=10):
     importances = model.feature_importances_
     sorted_idx = np.argsort(importances)[::-1][:top_n]
     print("\nTop feature importances:")
