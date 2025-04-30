@@ -12,6 +12,12 @@ keypad_pos = {
     '0': (3, 1)
 }
 
+sequential_codes = set()
+for start in range(10):
+    seq = ''.join(str((start + i) % 10) for i in range(4))
+    sequential_codes.add(seq)
+    sequential_codes.add(seq[::-1])
+
 def extract_features(code):
     digits = [int(d) for d in code]
     coords = [keypad_pos[d] for d in code]
@@ -19,7 +25,7 @@ def extract_features(code):
         ((coords[i][0] - coords[i-1][0])**2 + (coords[i][1] - coords[i-1][1])**2)**0.5
         for i in range(1, 4)
     )
-    
+
     col_counts = [0, 0, 0]  # columns 0, 1, 2
     for d in code:
         col = keypad_pos[d][1]
@@ -71,13 +77,8 @@ def extract_features(code):
         'keypad_path_length': keypad_dist
     }
 
-sequential_codes = set()
-for start in range(10):
-    seq = ''.join(str((start + i) % 10) for i in range(4))
-    sequential_codes.add(seq)
-    sequential_codes.add(seq[::-1])
-
 all_codes = [f"{i:04d}" for i in range(10000)]
+
 
 def load_known_codes():
     with open("working_codes.txt") as f:
@@ -112,7 +113,8 @@ def suggest_next(df, tried_codes):
     features["code"] = candidates
     features["prob"] = clf.predict_proba(features.drop(columns=["code"]))[:, 1]
     top = features.sort_values("prob", ascending=False).head(4)
-    return top[["code", "prob"]]
+    #return top[["code", "prob"]]
+    return top[["code"]]
 
 def show_feature_importance(model, feature_names, top_n=10):
     importances = model.feature_importances_
